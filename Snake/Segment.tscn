@@ -1,0 +1,39 @@
+[gd_scene load_steps=6 format=3 uid="uid://jm50ve3bjfkn"]
+
+[ext_resource type="Script" path="res://Snake/Segment.gd" id="1_7g5rj"]
+[ext_resource type="Script" path="res://Snake/TileMapCollider.gd" id="2_2c4hr"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_1x0su"]
+size = Vector3(64, 64, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_va5n4"]
+size = Vector2(64, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_41l73"]
+size = Vector2(50, 50)
+
+[node name="Segment" type="Node2D" groups=["SnakeSegment"]]
+script = ExtResource("1_7g5rj")
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="."]
+mesh = SubResource("BoxMesh_1x0su")
+
+[node name="TileMapCollider" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 30
+script = ExtResource("2_2c4hr")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TileMapCollider"]
+shape = SubResource("RectangleShape2D_va5n4")
+
+[node name="EntityCollider" type="Area2D" parent="."]
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EntityCollider"]
+shape = SubResource("RectangleShape2D_41l73")
+
+[connection signal="body_shape_entered" from="TileMapCollider" to="TileMapCollider" method="_on_body_shape_entered"]
+[connection signal="body_shape_exited" from="TileMapCollider" to="TileMapCollider" method="_on_body_shape_exited"]
+[connection signal="entered_unstable" from="TileMapCollider" to="." method="_on_tile_map_collider_entered_unstable"]
+[connection signal="exited_unstable" from="TileMapCollider" to="." method="_on_tile_map_collider_exited_unstable"]
+[connection signal="area_entered" from="EntityCollider" to="." method="_on_entity_collider_area_entered"]

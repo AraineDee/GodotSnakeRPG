@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://dg1msv7tbmiss"]
+
+[ext_resource type="Script" path="res://Snake/Snake.gd" id="1_h3fv2"]
+[ext_resource type="PackedScene" uid="uid://jm50ve3bjfkn" path="res://Snake/Segment.tscn" id="2_p4ywd"]
+
+[node name="Snake" type="Node2D"]
+script = ExtResource("1_h3fv2")
+SegmentScene = ExtResource("2_p4ywd")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(0.25, 0.25)
+
+[node name="Segment" parent="." instance=ExtResource("2_p4ywd")]
+
+[node name="Segment2" parent="." instance=ExtResource("2_p4ywd")]
+position = Vector2(0, -64)
+
+[node name="Segment3" parent="." instance=ExtResource("2_p4ywd")]
+position = Vector2(0, -128)
+
+[connection signal="moved" from="Segment" to="Segment2" method="set_next_step"]
+[connection signal="bounced" from="Segment2" to="Segment" method="set_last_step"]
+[connection signal="moved" from="Segment2" to="Segment3" method="set_next_step"]
+[connection signal="bounced" from="Segment3" to="Segment2" method="set_last_step"]
