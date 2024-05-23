@@ -25,12 +25,12 @@ func set_last_step(step : Vector2):
 
 func move():
 	position += next_step
-	emit_signal("moved", Vector2(last_step))
+	moved.emit(Vector2(last_step))
 	last_step = Vector2(next_step)
 	
 func bounce():
 	position -= last_step
-	emit_signal("bounced", Vector2(next_step))
+	bounced.emit(Vector2(next_step))
 	next_step = Vector2(last_step)
 
 func enable_entity_monitoring():
@@ -39,13 +39,13 @@ func enable_entity_monitoring():
 func _on_tile_map_collider_entered_unstable(_coords):
 	#if new stability is 1, then it used to be stable
 	if unstable_counter == 1:
-		emit_signal("stability_changed", self, 1)
+		stability_changed.emit(self, 1)
 
 func _on_tile_map_collider_exited_unstable(_coords):
 	#if new stability is 0, then it used to be unstable
 	if unstable_counter == 0:
-		emit_signal("stability_changed", self, 0)
+		stability_changed.emit(self, 0)
 
 func _on_entity_collider_area_entered(area):
 	if area.get_parent() is Segment:
-		emit_signal("hit_self", self, area.get_parent())
+		hit_self.emit(self, area.get_parent())

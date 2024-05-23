@@ -1,7 +1,16 @@
-[gd_scene load_steps=3 format=3 uid="uid://dg1msv7tbmiss"]
+[gd_scene load_steps=12 format=3 uid="uid://dg1msv7tbmiss"]
 
 [ext_resource type="Script" path="res://Snake/Snake.gd" id="1_h3fv2"]
 [ext_resource type="PackedScene" uid="uid://jm50ve3bjfkn" path="res://Snake/Segment.tscn" id="2_p4ywd"]
+[ext_resource type="Script" path="res://addons/finite_state_machine/scripts/finite_state_machine.gd" id="3_xu5g4"]
+[ext_resource type="Script" path="res://Snake/States/SnakeIdleState.gd" id="4_tgiri"]
+[ext_resource type="Script" path="res://Snake/States/SnakeMoveState.gd" id="5_b8361"]
+[ext_resource type="Script" path="res://Snake/States/SnakeStateBounce.gd" id="6_ibaue"]
+[ext_resource type="Script" path="res://Snake/States/SnakeStateDazed.gd" id="7_otsdj"]
+[ext_resource type="Script" path="res://Snake/States/SnakeStateBurrowing.gd" id="8_5x0re"]
+[ext_resource type="Script" path="res://Snake/States/SnakeStateBurrowed.gd" id="9_2gw3w"]
+[ext_resource type="Script" path="res://Snake/States/SnakeStateUnBurrowed.gd" id="10_eoo0u"]
+[ext_resource type="Script" path="res://Snake/States/SnakeStateUnBurrowing.gd" id="11_8nhaa"]
 
 [node name="Snake" type="Node2D"]
 script = ExtResource("1_h3fv2")
@@ -17,6 +26,42 @@ position = Vector2(0, -64)
 
 [node name="Segment3" parent="." instance=ExtResource("2_p4ywd")]
 position = Vector2(0, -128)
+
+[node name="FiniteStateMachine" type="Node" parent="." node_paths=PackedStringArray("current_state")]
+script = ExtResource("3_xu5g4")
+current_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("snake")]
+script = ExtResource("4_tgiri")
+snake = NodePath("../..")
+
+[node name="Move" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("snake")]
+script = ExtResource("5_b8361")
+snake = NodePath("../..")
+
+[node name="Bounce" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("snake")]
+script = ExtResource("6_ibaue")
+snake = NodePath("../..")
+
+[node name="Dazed" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("snake")]
+script = ExtResource("7_otsdj")
+snake = NodePath("../..")
+
+[node name="Burrowing" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("snake")]
+script = ExtResource("8_5x0re")
+snake = NodePath("../..")
+
+[node name="Burrowed" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("snake")]
+script = ExtResource("9_2gw3w")
+snake = NodePath("../..")
+
+[node name="UnBurrowed" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("snake")]
+script = ExtResource("10_eoo0u")
+snake = NodePath("../..")
+
+[node name="UnBurrowing" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("snake")]
+script = ExtResource("11_8nhaa")
+snake = NodePath("../..")
 
 [connection signal="moved" from="Segment" to="Segment2" method="set_next_step"]
 [connection signal="bounced" from="Segment2" to="Segment" method="set_last_step"]

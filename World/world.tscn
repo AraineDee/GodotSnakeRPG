@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://b8rxdr3yrygpy"]
+
+[ext_resource type="Script" path="res://World/world.gd" id="1_yrdqb"]
+[ext_resource type="PackedScene" uid="uid://dg1msv7tbmiss" path="res://Snake/Snake.tscn" id="2_yx6pf"]
+
+[node name="Test" type="Node2D"]
+
+[node name="World" type="Node2D" parent="." node_paths=PackedStringArray("snake")]
+script = ExtResource("1_yrdqb")
+snake = NodePath("Snake")
+
+[node name="Snake" parent="World" instance=ExtResource("2_yx6pf")]
+z_index = 1

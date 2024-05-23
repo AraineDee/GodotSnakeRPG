@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3 uid="uid://dsqrn0ldqgw5q"]
+
+[ext_resource type="Script" path="res://Menu/burrow_menu.gd" id="1_1ikfo"]
+
+[node name="BurrowMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_1ikfo")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "You Are burrowed"
+
+[node name="ExitButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = -2.0
+offset_top = 28.0
+offset_right = 35.0
+offset_bottom = 59.0
+text = "Exit"
+
+[connection signal="button_down" from="ExitButton" to="." method="_on_exit_button_button_down"]
