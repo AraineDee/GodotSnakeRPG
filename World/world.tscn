@@ -1,13 +1,14 @@
-[gd_scene load_steps=3 format=3 uid="uid://b8rxdr3yrygpy"]
+[gd_scene load_steps=4 format=3 uid="uid://b8rxdr3yrygpy"]
 
 [ext_resource type="Script" path="res://World/world.gd" id="1_yrdqb"]
-[ext_resource type="PackedScene" uid="uid://dg1msv7tbmiss" path="res://Snake/Snake.tscn" id="2_yx6pf"]
+[ext_resource type="PackedScene" uid="uid://dg1msv7tbmiss" path="res://Snake/Snake.tscn" id="2_5scb0"]
+[ext_resource type="Script" path="res://World/Chunk/ChunkLoader.gd" id="3_enki4"]
 
-[node name="Test" type="Node2D"]
-
-[node name="World" type="Node2D" parent="." node_paths=PackedStringArray("snake")]
+[node name="World" type="Node2D" node_paths=PackedStringArray("snake") groups=["World"]]
 script = ExtResource("1_yrdqb")
 snake = NodePath("Snake")
 
-[node name="Snake" parent="World" instance=ExtResource("2_yx6pf")]
-z_index = 1
+[node name="ChunkLoader" type="Node" parent="."]
+script = ExtResource("3_enki4")
+
+[node name="Snake" parent="." instance=ExtResource("2_5scb0")]

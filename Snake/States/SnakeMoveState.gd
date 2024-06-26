@@ -22,8 +22,15 @@ func on_physics_process(_delta):
 
 
 # Called when there is an input event while this state is active.
-func on_input(_event: InputEvent):
-	pass
+func on_input(event: InputEvent):
+	if event.is_action_pressed("Left"):
+		snake.set_dir(Snake.DIRECTION.LEFT)
+	if event.is_action_pressed("Right"):
+		snake.set_dir(Snake.DIRECTION.RIGHT)
+	if event.is_action_pressed("Up"):
+		snake.set_dir(Snake.DIRECTION.UP)
+	if event.is_action_pressed("Down"):
+		snake.set_dir(Snake.DIRECTION.DOWN)
 
 
 # Called when the state machine exits this state.

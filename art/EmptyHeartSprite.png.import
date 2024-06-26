@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b0k6sdfm23qwl"
-path="res://.godot/imported/tilesheet_complete_2X.png-64c7b7c7fb0b5535ff93622adefbbce9.ctex"
+uid="uid://bjmsnorccs0ue"
+path="res://.godot/imported/EmptyHeartSprite.png-8fc4254b17ffe4aa7ebd247aa185ac46.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/tilesheet_complete_2X.png"
-dest_files=["res://.godot/imported/tilesheet_complete_2X.png-64c7b7c7fb0b5535ff93622adefbbce9.ctex"]
+source_file="res://art/EmptyHeartSprite.png"
+dest_files=["res://.godot/imported/EmptyHeartSprite.png-8fc4254b17ffe4aa7ebd247aa185ac46.ctex"]
 
 [params]
 

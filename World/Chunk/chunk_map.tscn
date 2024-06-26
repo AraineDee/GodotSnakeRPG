@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://bu6o4l7bha0ob"]
+
+[ext_resource type="TileSet" uid="uid://dc4nn2a7nxifr" path="res://World/Chunk/WildsTileSet.tres" id="1_b2qa8"]
+
+[node name="ChunkMap" type="TileMap"]
+tile_set = ExtResource("1_b2qa8")
+format = 2
+layer_0/name = "Terrain"
+layer_1/name = "Hazard"
+layer_1/tile_data = PackedInt32Array()
+layer_2/name = "Interactable"
+layer_2/tile_data = PackedInt32Array()
+layer_3/name = "Pickup"
+layer_3/tile_data = PackedInt32Array()

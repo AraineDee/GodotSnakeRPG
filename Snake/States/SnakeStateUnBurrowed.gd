@@ -4,10 +4,12 @@ extends StateMachineState
 
 # Called when the state machine enters this state.
 func on_enter():
-	snake.add_segment()
-	snake.move_segment_to_burrow()
-	snake.toggle_cam()
+	do_unburrow.call_deferred()
 
+#this is a seperate func cuz needs to be called deffered
+func do_unburrow():
+	snake.add_segment()
+	snake.segments[0].position = WorldManager.get_burrow_pos()
 
 # Called every frame when this state is active.
 func on_process(_delta):

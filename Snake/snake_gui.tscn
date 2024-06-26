@@ -1,0 +1,39 @@
+[gd_scene load_steps=4 format=3 uid="uid://dtgfk0xmd6brm"]
+
+[ext_resource type="Texture2D" uid="uid://cc4u5egtjrwp0" path="res://art/FilledHeartSprite.png" id="1_ahx47"]
+[ext_resource type="Script" path="res://Snake/snake_gui.gd" id="1_eetdb"]
+[ext_resource type="Script" path="res://Snake/HeartContainer.gd" id="1_odo7y"]
+
+[node name="SnakeGUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_eetdb")
+
+[node name="HeartContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.05
+offset_bottom = 12.0
+grow_horizontal = 2
+script = ExtResource("1_odo7y")
+
+[node name="Heart" type="TextureRect" parent="HeartContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+texture = ExtResource("1_ahx47")
+expand_mode = 3
+
+[node name="Heart2" type="TextureRect" parent="HeartContainer"]
+layout_mode = 2
+texture = ExtResource("1_ahx47")
+expand_mode = 3
+
+[node name="Heart3" type="TextureRect" parent="HeartContainer"]
+layout_mode = 2
+texture = ExtResource("1_ahx47")
+expand_mode = 3

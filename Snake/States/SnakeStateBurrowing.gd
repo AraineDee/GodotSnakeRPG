@@ -7,7 +7,7 @@ var timer : float
 
 # Called when the state machine enters this state.
 func on_enter():
-	snake.desired_segments = snake.num_segments
+	SaveManager.desired_segments = snake.num_segments
 	timer = TIMER_LENGTH
 
 

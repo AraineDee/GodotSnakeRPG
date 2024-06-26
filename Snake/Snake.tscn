@@ -1,7 +1,8 @@
-[gd_scene load_steps=12 format=3 uid="uid://dg1msv7tbmiss"]
+[gd_scene load_steps=16 format=3 uid="uid://dg1msv7tbmiss"]
 
 [ext_resource type="Script" path="res://Snake/Snake.gd" id="1_h3fv2"]
 [ext_resource type="PackedScene" uid="uid://jm50ve3bjfkn" path="res://Snake/Segment.tscn" id="2_p4ywd"]
+[ext_resource type="PackedScene" uid="uid://dtgfk0xmd6brm" path="res://Snake/snake_gui.tscn" id="3_vuuov"]
 [ext_resource type="Script" path="res://addons/finite_state_machine/scripts/finite_state_machine.gd" id="3_xu5g4"]
 [ext_resource type="Script" path="res://Snake/States/SnakeIdleState.gd" id="4_tgiri"]
 [ext_resource type="Script" path="res://Snake/States/SnakeMoveState.gd" id="5_b8361"]
@@ -11,25 +12,21 @@
 [ext_resource type="Script" path="res://Snake/States/SnakeStateBurrowed.gd" id="9_2gw3w"]
 [ext_resource type="Script" path="res://Snake/States/SnakeStateUnBurrowed.gd" id="10_eoo0u"]
 [ext_resource type="Script" path="res://Snake/States/SnakeStateUnBurrowing.gd" id="11_8nhaa"]
+[ext_resource type="Script" path="res://Snake/States/SnakeStateFalling.gd" id="12_kfxhg"]
+[ext_resource type="Script" path="res://Snake/States/SnakeDashState.gd" id="13_m10vx"]
+[ext_resource type="Script" path="res://Snake/States/SnakeStateRespawning.gd" id="14_hb7oy"]
 
 [node name="Snake" type="Node2D"]
+visibility_layer = 2
 script = ExtResource("1_h3fv2")
 SegmentScene = ExtResource("2_p4ywd")
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(0.25, 0.25)
-
-[node name="Segment" parent="." instance=ExtResource("2_p4ywd")]
-
-[node name="Segment2" parent="." instance=ExtResource("2_p4ywd")]
-position = Vector2(0, -64)
-
-[node name="Segment3" parent="." instance=ExtResource("2_p4ywd")]
-position = Vector2(0, -128)
+zoom = Vector2(0.45, 0.45)
 
 [node name="FiniteStateMachine" type="Node" parent="." node_paths=PackedStringArray("current_state")]
 script = ExtResource("3_xu5g4")
-current_state = NodePath("Idle")
+current_state = NodePath("UnBurrowed")
 
 [node name="Idle" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("snake")]
 script = ExtResource("4_tgiri")
@@ -63,7 +60,19 @@ snake = NodePath("../..")
 script = ExtResource("11_8nhaa")
 snake = NodePath("../..")
 
-[connection signal="moved" from="Segment" to="Segment2" method="set_next_step"]
-[connection signal="bounced" from="Segment2" to="Segment" method="set_last_step"]
-[connection signal="moved" from="Segment2" to="Segment3" method="set_next_step"]
-[connection signal="bounced" from="Segment3" to="Segment2" method="set_last_step"]
+[node name="Falling" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("snake")]
+script = ExtResource("12_kfxhg")
+snake = NodePath("../..")
+
+[node name="Dash" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("snake")]
+script = ExtResource("13_m10vx")
+snake = NodePath("../..")
+
+[node name="Respawning" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("snake")]
+script = ExtResource("14_hb7oy")
+snake = NodePath("../..")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+follow_viewport_scale = 10.0
+
+[node name="SnakeGUI" parent="CanvasLayer" instance=ExtResource("3_vuuov")]

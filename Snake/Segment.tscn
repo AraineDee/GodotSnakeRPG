@@ -7,12 +7,13 @@
 size = Vector3(64, 64, 1)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_va5n4"]
-size = Vector2(64, 64)
+size = Vector2(58, 58)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_41l73"]
 size = Vector2(50, 50)
 
 [node name="Segment" type="Node2D" groups=["SnakeSegment"]]
+z_index = 2
 script = ExtResource("1_7g5rj")
 
 [node name="MeshInstance2D" type="MeshInstance2D" parent="."]
@@ -28,13 +29,10 @@ shape = SubResource("RectangleShape2D_va5n4")
 
 [node name="EntityCollider" type="Area2D" parent="."]
 collision_mask = 17
-monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="EntityCollider"]
 shape = SubResource("RectangleShape2D_41l73")
 
 [connection signal="body_shape_entered" from="TileMapCollider" to="TileMapCollider" method="_on_body_shape_entered"]
 [connection signal="body_shape_exited" from="TileMapCollider" to="TileMapCollider" method="_on_body_shape_exited"]
-[connection signal="entered_unstable" from="TileMapCollider" to="." method="_on_tile_map_collider_entered_unstable"]
-[connection signal="exited_unstable" from="TileMapCollider" to="." method="_on_tile_map_collider_exited_unstable"]
 [connection signal="area_entered" from="EntityCollider" to="." method="_on_entity_collider_area_entered"]

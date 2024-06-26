@@ -12,6 +12,8 @@ func on_enter():
 
 # Called every frame when this state is active.
 func on_process(delta):
+	if snake.unstable_count >= snake.num_segments:
+		change_state("Falling")
 	if timer <= 0:
 		change_state("Move")
 	timer -= delta
@@ -25,9 +27,15 @@ func on_physics_process(_delta):
 # Called when there is an input event while this state is active.
 func on_input(event: InputEvent):
 	if event.is_action_pressed("Left"):
-		snake.turn_left()
+		snake.set_dir(Snake.DIRECTION.LEFT)
 	if event.is_action_pressed("Right"):
-		snake.turn_right()
+		snake.set_dir(Snake.DIRECTION.RIGHT)
+	if event.is_action_pressed("Up"):
+		snake.set_dir(Snake.DIRECTION.UP)
+	if event.is_action_pressed("Down"):
+		snake.set_dir(Snake.DIRECTION.DOWN)
+	if event.is_action_pressed("Dash"):
+		change_state("Dash")
 
 
 # Called when the state machine exits this state.

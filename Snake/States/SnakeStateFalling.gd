@@ -2,14 +2,25 @@ extends StateMachineState
 
 @export var snake : Snake
 
+const TIMER_LENGTH : float = 0.5
+var timer : float
+
+var chunk : Chunk
+var head_coords : Vector2i
+
 # Called when the state machine enters this state.
 func on_enter():
-	WorldManager.do_burrow()
+	timer = TIMER_LENGTH
+	chunk = snake.get_parent().snake_head_chunk
+	head_coords = chunk.get_local_coords(snake.segments[0].global_position)
 
 
 # Called every frame when this state is active.
-func on_process(_delta):
-	pass
+func on_process(delta):
+	if timer <= 0:
+		pass
+	
+	timer -= delta
 
 
 # Called every physics frame when this state is active.

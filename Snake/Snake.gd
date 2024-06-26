@@ -17,16 +17,17 @@ signal got_key()
 signal burrowed()
 signal died()
 
+signal took_damage(new_health : int)
 
 @export var SegmentScene : PackedScene
 
 @onready var state_machine : FiniteStateMachine = $FiniteStateMachine
 
 var segments : Array[Segment]= []
-var num_segments := 3
-var desired_segments := 3
+var num_segments := 0
+@onready var desired_segments : int = SaveManager.desired_segments
 
-var segment_stability := 0
+var unstable_count : int = 0 #the number of segments that are unstable
 
 enum DIRECTION {RIGHT, DOWN, LEFT, UP}
 
@@ -40,68 +41,27 @@ var falling := false
 var burrowing := false
 var is_burrowed := false
 var unburrowing := false
+
+var health : int = 3
 #endregion
 
 #region INITIALIZATIONS
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	for seg in get_tree().get_nodes_in_group("SnakeSegment"):
-		init_segment(seg)
-	segments[0].enable_entity_monitoring()
-
-
 func init_segment(seg : Segment):
 	segments.append(seg)
 	
 	move.connect(seg.move)
 	bounce.connect(seg.bounce)
+	seg.new_chunk.connect(move_to_chunk)
 	
 	seg.set_next_step(steps[dir] * step_mult)
 	seg.set_last_step(steps[dir] * step_mult)
 	
-	seg.stability_changed.connect(_on_segment_stability_changed)
 	seg.hit_self.connect(_on_segment_hit_self)
 
 #endregion
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta : float):
-	pass
-	#if burrowing and num_segments == 0:
-		#burrowing = false
-		#is_burrowed = true
-		#burrowed.emit()
-	#
-	#if is_burrowed:
-		#return
-	#
-	#if not burrowing and not is_burrowed:
-		#$Camera2D.position = segments[0].position
-	#if(move_timer <= 0):
-		#move_timer = time_between_moves
-		#if burrowing:
-			#_remove_segment(0)
-			#if num_segments <= 0:
-				#return
-			#
-		#_check_stability()
-		#if falling and not dazed:
-			#died.emit()
-		#
-		#segments[0].set_next_step(steps[dir]  * step_mult)
-		#if not dazed:
-			#move.emit()
-			#last_dir = dir
-		#dazed = false
-		#
-	#move_timer -= delta
-
-func _do_bounce():
-	if dazed:
-		return
-	dir = last_dir
-	bounce.emit()
-	dazed = true
+func move_to_chunk(chunk : Chunk):
+	$Camera2D.position = chunk.position
 
 #region INPUT
 func get_next_step() -> Vector2i:
@@ -143,43 +103,55 @@ func turn_right():
 	dir = new_dir
 
 func set_dir(new_dir : DIRECTION):
+	if abs(new_dir-last_dir) == 2 and not state_machine.current_state.name == "UnBurrowed":
+		return
 	dir = new_dir
 	segments[0].next_step = get_next_step()
 
 #endregion
 
-func toggle_cam():
-	$Camera2D.enabled = !$Camera2D.enabled
-
-func unburrow():
-	state_machine.change_state("UnBurrowed")
-
 #region COLLISION HANDLING
-func handle_wall_collision(_wall_coords : Vector2i):
-	state_machine.change_state("Bounce")
-
 func _on_segment_hit_self(_seg : Segment, _other_seg : Segment):
 	state_machine.change_state("Bounce")
 	
-func handle_pickup(type : int, pickup_coords : Vector2i):
+func handle_pickup(_segment : Segment, type : int, pickup_coords : Vector2i):
 	match type:
 		0: #apple
 			add_segment.call_deferred()
-		1: #unapple
-			remove_segment.call_deferred(num_segments-1)
-		2: #key
-			got_key.emit()
 	
 	got_pickup.emit(pickup_coords)
 
-func handle_interactable(type : int, _tile_coords : Vector2i):
+func handle_hazard_enter(_segment : Segment, type : int, _hazard_coords : Vector2i):
 	match type:
-		0: #goal
-			hit_goal.emit()
-		1: #burrow
+		0: #solid
+			state_machine.change_state("Bounce")
+			take_damage(1)
+		1: #pit
+			state_machine.change_state("Bounce")
+
+func handle_hazard_exit(_segment : Segment, _type : int, _hazard_coords : Vector2i):
+	pass
+
+func handle_interactable_enter(segment : Segment, type : int, tile_coords : Vector2i):
+	match type:
+		0: #burrow
 			if state_machine.current_state.name != "Idle":
 				return
-			state_machine.change_state("Burrowing")
+			if segment.is_head:
+				state_machine.change_state("Burrowing")
+		1: #bridge
+			unstable_count += 1
+		2: #apple tree
+			print("entered apple tree")
+			state_machine.change_state("Bounce")
+			take_damage(1)
+			get_parent().apple_tree(segment, tile_coords)
+
+
+func handle_interactable_exit(_segment : Segment, type : int, _tile_coords : Vector2i):
+	match type:
+		1: #bridge
+			unstable_count -= 1
 
 #endregion
 
@@ -190,41 +162,37 @@ func add_segment():
 	num_segments += 1
 	init_segment(new_segment)
 	if num_segments == 1:
+		new_segment.set_as_head()
 		return
 	var tail = segments[-2]
 	tail.moved.connect(new_segment.set_next_step)
 	new_segment.bounced.connect(tail.set_last_step)
 	new_segment.position = tail.position - tail.last_step
-	
-	
+
 func remove_segment(id : int):
 	assert(id >= 0 and id < num_segments, "ID must be valid number")
 	var removed = segments.pop_at(id) as Segment
 	removed.queue_free()
-	if id != 0 and id != num_segments-1:
+	num_segments -= 1
+	if id == 0 and num_segments > 0:
+		segments[0].set_as_head()	
+	if id != 0 and id < num_segments:
 		segments[id].bounced.connect(segments[id-1].set_last_step)
 		segments[id-1].moved.connect(segments[id].set_next_step)
-	num_segments -= 1
 
 #endregion
 
-func move_segment_to_burrow():
-	var chunk = get_parent().chunk_is_loaded(get_parent().chunk_offset) as Chunk
-	#get cells in interactable layer
-	var interactable_coords = chunk.get_used_cells(2)
-	#loop through coords to find burrow
-	for tile_coords in interactable_coords:
-		if chunk.get_cell_tile_data(2, tile_coords).get_custom_data("InteractableType") == 1:
-			segments[0].position = chunk.map_to_local(tile_coords)
+func respawn(chunk : Chunk, coords : Vector2i):
+	var respawn_state = get_child(1).get_child(10)
+	respawn_state.chunk = chunk
+	respawn_state.coords = coords
+	state_machine.change_state("Respawning")
 
+func unburrow():
+	state_machine.change_state("UnBurrowed")
 
-func _check_stability():
-	if segment_stability == num_segments:
-		falling = true
-		print("died")
-
-func _on_segment_stability_changed(_seg : Segment, new_stability : int):
-	if new_stability == 1:
-		segment_stability += 1
-	if new_stability == 0:
-		segment_stability -= 1
+func take_damage(damage : int):
+	health -= damage
+	took_damage.emit(health)
+	if health <= 0:
+		died.emit()
